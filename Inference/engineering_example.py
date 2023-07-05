@@ -9,7 +9,7 @@ import onnxruntime
 from typing import List, Tuple
 
 # Constants
-TEST_DIR = r"/content/test_car"
+TEST_DIR = r"/Inference/test_car"
 ONNX_MODEL_PATH = "outputs/onnx_model/VeriWildPreTrained.onnx"
 IMAGE_WIDTH = 256
 IMAGE_HEIGHT = 256
