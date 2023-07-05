@@ -1,7 +1,6 @@
 import os
 import numpy as np
 import onnxruntime as ort
-from PIL import Image
 from tqdm import tqdm
 
 from Inference.engineering_example import preprocess, ONNX_MODEL_PATH, TEST_DIR
