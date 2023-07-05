@@ -19,7 +19,7 @@ def to_numpy(tensor):
     return tensor.detach().cpu().numpy() if tensor.requires_grad else tensor.cpu().numpy()
 
 
-def preprocess(image_path: str):
+def preprocess(image_path: str) -> np.ndarray:
     original_image = cv2.imread(image_path)
     # the model expects RGB inputs
     original_image = original_image[:, :, ::-1]
