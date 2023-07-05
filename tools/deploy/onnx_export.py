@@ -118,7 +118,13 @@ def export_onnx_model(model, inputs):
                 model,
                 inputs,
                 f,
+                opset_version=13,
                 operator_export_type=OperatorExportTypes.ONNX_ATEN_FALLBACK,
+                do_constant_folding=True,  # whether to execute constant folding for optimization
+                input_names=['input'],  # the model's input names
+                output_names=['output'],  # the model's output names
+                dynamic_axes={'input': {0: 'batch_size'},  # variable length axes
+                              'output': {0: 'batch_size'}})
                 # verbose=True,  # NOTE: uncomment this for debugging
                 # export_params=True,
             )
