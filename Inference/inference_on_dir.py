@@ -39,7 +39,7 @@ def run_onnx_on_dir(onnx_model_path: str, image_dir: str):
         batched_outputs.append(feat_onnx)
         print(f"Processed batch {batch_num + 1}/{num_batches}")
     all_outputs = np.concatenate(batched_outputs)
-    output_file_path = os.path.join(os.path.basename(image_dir), DATA_FILE_NAME)
+    output_file_path = os.path.join(image_dir, DATA_FILE_NAME)
     np.save(output_file_path, {"file_names": img_names, "feat_vec": all_outputs})
     print(f"Saved the outputs to {output_file_path}.")
 
