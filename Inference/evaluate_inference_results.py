@@ -32,7 +32,7 @@ def evaluate(q_feat: torch.Tensor, g_features: torch.Tensor, q_pids: torch.Tenso
     indices = np.argsort(dist_mat, axis=1)
 
     # compute cmc curve for each query
-    all_cmc = []
+    all_top_k_hit = []
     all_ap = []
     num_valid_q = 0.  # number of valid query
 
@@ -44,17 +44,17 @@ def evaluate(q_feat: torch.Tensor, g_features: torch.Tensor, q_pids: torch.Tenso
             # this condition is true when query identity does not appear in gallery
             continue
 
-        all_cmc.append(calc_cumulative_sum(query_hit)[:max_rank])
+        all_top_k_hit.append(calc_top_k_hit(query_hit)[:max_rank])
         all_ap.append(calc_average_precision(query_hit))
         num_valid_q += 1.
 
     assert num_valid_q > 0, 'error: all query identities do not appear in gallery'
-    all_cmc = np.asarray(all_cmc).astype(np.float32)
-    all_cmc = all_cmc.sum(0) / num_valid_q
-    return all_cmc, all_ap
+    all_top_k_hit = np.asarray(all_top_k_hit).astype(np.float32)
+    average_top_k_hit = all_top_k_hit.sum(0) / num_valid_q
+    return average_top_k_hit, all_ap
 
 
-def calc_cumulative_sum(query_hit):
+def calc_top_k_hit(query_hit):
     cmc = query_hit.cumsum()
     cmc[cmc > 1] = 1
     return cmc
