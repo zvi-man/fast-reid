@@ -126,8 +126,7 @@ def export_onnx_model(model, inputs):
                 dynamic_axes={'input': {0: 'batch_size'},  # variable length axes
                               'output': {0: 'batch_size'}})
                 # verbose=True,  # NOTE: uncomment this for debugging
-                # export_params=True,
-            )
+                # export_params=True)
             onnx_model = onnx.load_from_string(f.getvalue())
 
     logger.info("Completed convert of ONNX model")

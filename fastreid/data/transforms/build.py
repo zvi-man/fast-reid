@@ -16,6 +16,17 @@ def build_transforms(cfg, is_train=True):
     if is_train:
         size_train = cfg.INPUT.SIZE_TRAIN
 
+        # TODO: add to cfg file
+        # Blur
+        do_blur = True
+
+        # Motion
+        do_motion = True
+
+        # SubSample
+        do_subsample = True
+        resize_factor = 0.8
+
         # crop
         do_crop = cfg.INPUT.CROP.ENABLED
         crop_size = cfg.INPUT.CROP.SIZE
@@ -64,6 +75,20 @@ def build_transforms(cfg, is_train=True):
 
         if size_train[0] > 0:
             res.append(T.Resize(size_train[0] if len(size_train) == 1 else size_train, interpolation=3))
+
+        if do_blur:
+            res.append(T.Lambda())
+
+        if do_motion:
+            res.append()
+
+        if do_subsample:
+            original_size = size_train
+            new_size = [round(dim_size[0] * resize_factor) for dim_size in original_size]
+            aug_down = T.Resize(new_size[0] if len(new_size) == 1 else new_size)
+            aug_up = T.Resize(original_size[0] if len(original_size) == 1 else original_size)
+            aug_subsample = T.Compose([aug_down, aug_up])
+            res.append(T.RandomApply(aug_subsample, p=0.3))
 
         if do_crop:
             res.append(T.RandomResizedCrop(size=crop_size[0] if len(crop_size) == 1 else crop_size,

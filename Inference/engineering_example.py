@@ -9,7 +9,7 @@ import onnxruntime
 from typing import List, Tuple
 
 # Constants
-TEST_DIR = r"/content/test_car"
+TEST_DIR = r"Inference/test_car"
 ONNX_MODEL_PATH = "outputs/onnx_model/VeriWildPreTrained.onnx"
 IMAGE_WIDTH = 256
 IMAGE_HEIGHT = 256
@@ -19,7 +19,7 @@ def to_numpy(tensor):
     return tensor.detach().cpu().numpy() if tensor.requires_grad else tensor.cpu().numpy()
 
 
-def preprocess(image_path: str):
+def preprocess(image_path: str) -> np.ndarray:
     original_image = cv2.imread(image_path)
     # the model expects RGB inputs
     original_image = original_image[:, :, ::-1]
