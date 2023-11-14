@@ -16,6 +16,7 @@ from collections import OrderedDict
 
 import torch
 from torch.nn.parallel import DistributedDataParallel
+from torch.utils.tensorboard import SummaryWriter
 
 from fastreid.data import build_reid_test_loader, build_reid_train_loader
 from fastreid.evaluation import (ReidEvaluator,
@@ -299,8 +300,8 @@ class DefaultTrainer(TrainerBase):
         # This is not always the best: if checkpointing has a different frequency,
         # some checkpoints may have more precise statistics than others.
 
-        def test_and_save_results():
-            self._last_eval_results = self.test(self.cfg, self.model)
+        def test_and_save_results(epoch_num: int):
+            self._last_eval_results = self.test(self.cfg, self.model, epoch_num)
             return self._last_eval_results
 
         # Do evaluation before checkpointer, because then if it fails,
@@ -415,7 +416,7 @@ class DefaultTrainer(TrainerBase):
         return data_loader, ReidEvaluator(cfg, num_query, output_dir)
 
     @classmethod
-    def test(cls, cfg, model):
+    def test(cls, cfg, model, epoch_num: int):
         """
         Args:
             cfg (CfgNode):
@@ -437,6 +438,7 @@ class DefaultTrainer(TrainerBase):
                 results[dataset_name] = {}
                 continue
             results_i = inference_on_dataset(model, data_loader, evaluator, flip_test=cfg.TEST.FLIP.ENABLED)
+            cls.add_results_to_tb(results_i, tensorboard_path=cfg.OUTPUT_DIR, epoch_num=epoch_num)
             results[dataset_name] = results_i
 
             if comm.is_main_process():
@@ -483,6 +485,12 @@ class DefaultTrainer(TrainerBase):
         if frozen: cfg.freeze()
 
         return cfg
+
+    @classmethod
+    def add_results_to_tb(cls, results_i: OrderedDict, tensorboard_path: str, epoch_num: int) -> None:
+        tb_writer = SummaryWriter(tensorboard_path)
+        for key, val in results_i.items():
+            tb_writer.add_scalar("Test/" + key, val, epoch_num)
 
 
 # Access basic attributes from the underlying trainer

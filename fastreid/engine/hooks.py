@@ -347,8 +347,8 @@ class EvalHook(HookBase):
         self._period = eval_period
         self._func = eval_function
 
-    def _do_eval(self):
-        results = self._func()
+    def _do_eval(self, current_epoch: int):
+        results = self._func(current_epoch)
 
         if results:
             assert isinstance(
@@ -374,7 +374,7 @@ class EvalHook(HookBase):
     def after_epoch(self):
         next_epoch = self.trainer.epoch + 1
         if self._period > 0 and next_epoch % self._period == 0:
-            self._do_eval()
+            self._do_eval(next_epoch)
 
     def after_train(self):
         next_epoch = self.trainer.epoch + 1
